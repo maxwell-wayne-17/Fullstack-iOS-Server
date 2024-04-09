@@ -15,8 +15,24 @@ mongoose.connection.once("open", () => {
 
 
 // POST request will enable us to send info from client to server
+// Create a new text
+// http://<IPv4>:8081/create
+app.post("/create", (request, response) => {
+    var text = new Data({
+        text: request.get("text")
+    })
+    text.save().then(() => {
+        if (text.isNew == false) {
+            const savedData = "Saved data"
+            console.log(savedData)
+            response.send(savedData)
+        } else {
+            console.log("Failed to save data")
+        }
+    })
+})
 
-// http://<IPv4>:8081/<request name>
+// http://<IPv4>:8081/<route name>
 const adcIp = require('./ipConst')
 var server = app.listen(8081, adcIp, () => {
     console.log("Server is running.")

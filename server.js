@@ -21,6 +21,14 @@ app.get("/getall", (request, response) => {
     })
 })
 
+// Get a text by ID
+// http://<IPv4>:8081/get
+app.get("/get", (request, response) => {
+    Data.findOne({_id: request.get("_id")}).then((DBItem) => {
+        response.send(DBItem)
+    })
+})
+
 
 // POST request will enable us to send info from client to server
 // Create a new text
@@ -44,7 +52,7 @@ app.post("/create", (request, response) => {
 // http://<IPv4>:8081/delete
 app.post("/delete", async (request, response) => {
     try {
-        await Data.findOneAndDelete({ _id: request.get("id") })
+        await Data.findOneAndDelete({ _id: request.get("_id") })
         response.send("Deleted")
     } catch(error) {
         console.log("Failed delete with error: " + error)
@@ -56,7 +64,7 @@ app.post("/delete", async (request, response) => {
 app.post("/update", async (request, response) => {
     try{
         await Data.findOneAndUpdate({
-            _id: request.get("id")
+            _id: request.get("_id")
         }, {
             text: request.get("text")
         })

@@ -1,6 +1,7 @@
 const express = require('express')
 const mongoose = require('mongoose')
 var app = express()
+app.use(express.json())
 var Data = require('./basicSchema')
 
 mongoose.connect("mongodb://localhost/newDB")
@@ -24,7 +25,7 @@ app.get("/getall", (request, response) => {
 // Get a text by ID
 // http://<IPv4>:8081/get
 app.get("/get", (request, response) => {
-    Data.findOne({_id: request.get("_id")}).then((DBItem) => {
+    Data.findOne({_id: request.query._id}).then((DBItem) => {
         response.send(DBItem)
     })
 })
@@ -35,7 +36,7 @@ app.get("/get", (request, response) => {
 // http://<IPv4>:8081/create
 app.post("/create", (request, response) => {
     var text = new Data({
-        text: request.get("text")
+        text: request.request.body.text
     })
     text.save().then(() => {
         if (text.isNew == false) {
@@ -52,7 +53,7 @@ app.post("/create", (request, response) => {
 // http://<IPv4>:8081/delete
 app.post("/delete", async (request, response) => {
     try {
-        await Data.findOneAndDelete({ _id: request.get("_id") })
+        await Data.findOneAndDelete({ _id: request.body.text })
         response.send("Deleted")
     } catch(error) {
         console.log("Failed delete with error: " + error)
@@ -64,10 +65,11 @@ app.post("/delete", async (request, response) => {
 app.post("/update", async (request, response) => {
     try{
         await Data.findOneAndUpdate({
-            _id: request.get("_id")
+            _id: request.body._id
         }, {
-            text: request.get("text")
+            text: request.body.text
         })
+        console.log(request.body)
         response.send("Updated")
     } catch(error) {
         console.log("Failed to update: " + error)
